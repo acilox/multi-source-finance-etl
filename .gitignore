@@ -1,0 +1,82 @@
+# Environment
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+develop-eggs/
+.installed.cfg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Linting
+.ruff_cache/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs & runtime data
+logs/
+*.log
+data/raw/
+data/processed/
+data/output/
+!data/sample/
+
+# Notebooks
+.ipynb_checkpoints/
+*.ipynb_meta
+
+# Airflow
+airflow.cfg
+airflow.db
+airflow-webserver.pid
+standalone_admin_password.txt
+dags/__pycache__/
+
+# Great Expectations
+gx/uncommitted/
+
+# Docker
+.dockerignore
