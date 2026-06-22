@@ -13,7 +13,8 @@ WORKDIR /build
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
-    libaio1 \
+    && (apt-get install -y --no-install-recommends libaio1t64 \
+        || apt-get install -y --no-install-recommends libaio1) \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml README.md ./
@@ -31,7 +32,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
-    libaio1 \
+    && (apt-get install -y --no-install-recommends libaio1t64 \
+        || apt-get install -y --no-install-recommends libaio1) \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --gid 1000 finance_etl \
     && useradd --uid 1000 --gid finance_etl --shell /bin/bash --create-home finance_etl
