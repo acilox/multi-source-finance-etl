@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from datetime import datetime
 from decimal import Decimal
-from typing import Iterator
 
 from finance_etl.config.logging_config import get_logger
 from finance_etl.config.settings import get_settings
@@ -46,7 +46,7 @@ class OracleTransactionExtractor:
         self.settings = get_settings()
         self._connection = None
 
-    def __enter__(self) -> "OracleTransactionExtractor":
+    def __enter__(self) -> OracleTransactionExtractor:
         self._connect()
         return self
 

@@ -47,9 +47,7 @@ class CurrencyNormalizer:
             rate = self._find_recent_rate(currency, as_of, max_days_back=7)
 
         if rate is None:
-            raise ValueError(
-                f"No FX rate available for {currency} on/before {as_of}"
-            )
+            raise ValueError(f"No FX rate available for {currency} on/before {as_of}")
 
         # rate is base->quote, so quote->base is 1/rate
         amount_base = (amount / rate).quantize(Decimal("0.0001"))

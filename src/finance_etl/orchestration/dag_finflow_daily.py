@@ -15,6 +15,7 @@ try:
     from airflow import DAG  # type: ignore[import-not-found]
     from airflow.operators.python import PythonOperator  # type: ignore[import-not-found]
     from airflow.sensors.filesystem import FileSensor  # type: ignore[import-not-found]
+
     AIRFLOW_AVAILABLE = True
 except ImportError:
     AIRFLOW_AVAILABLE = False

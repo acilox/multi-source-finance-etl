@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
 import httpx
@@ -24,7 +24,7 @@ class FXRateExtractor:
         self.timeout = timeout
         self._client = httpx.Client(timeout=timeout)
 
-    def __enter__(self) -> "FXRateExtractor":
+    def __enter__(self) -> FXRateExtractor:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -66,7 +66,7 @@ class FXRateExtractor:
         data = response.json()
 
         rates: list[FXRate] = []
-        fetched_at = datetime.now(tz=timezone.utc)
+        fetched_at = datetime.now(tz=UTC)
 
         for quote_ccy, raw_rate in data.get("rates", {}).items():
             try:

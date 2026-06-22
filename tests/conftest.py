@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 import pytest
@@ -25,21 +25,21 @@ def sample_transaction() -> Transaction:
         status=TransactionStatus.POSTED,
         amount=Decimal("250.00"),
         currency="USD",
-        transaction_timestamp=datetime(2026, 5, 20, 12, 0, 0, tzinfo=timezone.utc),
-        posted_timestamp=datetime(2026, 5, 20, 12, 0, 5, tzinfo=timezone.utc),
+        transaction_timestamp=datetime(2026, 5, 20, 12, 0, 0, tzinfo=UTC),
+        posted_timestamp=datetime(2026, 5, 20, 12, 0, 5, tzinfo=UTC),
         merchant_id="MERCH-1",
         merchant_category="GROCERY",
         merchant_country="US",
         description="Grocery store purchase",
         reference_number="REF-X-9001",
         source_system="oracle_core_banking",
-        source_extracted_at=datetime(2026, 5, 20, 12, 0, 30, tzinfo=timezone.utc),
+        source_extracted_at=datetime(2026, 5, 20, 12, 0, 30, tzinfo=UTC),
     )
 
 
 @pytest.fixture
 def fx_rates_usd_base() -> list[FXRate]:
-    fetched = datetime(2026, 5, 20, 0, 0, 0, tzinfo=timezone.utc)
+    fetched = datetime(2026, 5, 20, 0, 0, 0, tzinfo=UTC)
     return [
         FXRate(
             base_currency="USD",
@@ -71,7 +71,7 @@ def fx_rates_usd_base() -> list[FXRate]:
 @pytest.fixture
 def burst_transactions() -> list[Transaction]:
     """15 transactions for one customer within 10 minutes — should trigger velocity rule."""
-    base = datetime(2026, 5, 20, 12, 0, 0, tzinfo=timezone.utc)
+    base = datetime(2026, 5, 20, 12, 0, 0, tzinfo=UTC)
     return [
         Transaction(
             transaction_id=f"BURST-{i:03d}",

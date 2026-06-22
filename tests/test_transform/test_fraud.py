@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 from finance_etl.models import Transaction, TransactionStatus, TransactionType
@@ -40,7 +40,7 @@ def test_velocity_burst_triggers(burst_transactions):
 
 def test_geo_velocity_cross_country():
     engine = FraudScoringEngine()
-    base = datetime(2026, 5, 20, 12, 0, 0, tzinfo=timezone.utc)
+    base = datetime(2026, 5, 20, 12, 0, 0, tzinfo=UTC)
 
     txn1 = Transaction(
         transaction_id="T1",

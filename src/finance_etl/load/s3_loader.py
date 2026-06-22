@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import date
-from typing import Iterable
 
 import pandas as pd
 import pyarrow as pa
@@ -25,7 +25,7 @@ class S3Loader:
         self.settings = get_settings()
         self._s3 = None
 
-    def __enter__(self) -> "S3Loader":
+    def __enter__(self) -> S3Loader:
         self._connect()
         return self
 

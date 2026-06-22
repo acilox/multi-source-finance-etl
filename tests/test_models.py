@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 import pytest
@@ -21,9 +21,9 @@ def test_transaction_validates_currency():
             status=TransactionStatus.POSTED,
             amount=Decimal("10"),
             currency="usd",  # lowercase — should fail
-            transaction_timestamp=datetime.now(tz=timezone.utc),
+            transaction_timestamp=datetime.now(tz=UTC),
             source_system="test",
-            source_extracted_at=datetime.now(tz=timezone.utc),
+            source_extracted_at=datetime.now(tz=UTC),
         )
 
 
@@ -37,9 +37,9 @@ def test_transaction_rejects_negative_amount():
             status=TransactionStatus.POSTED,
             amount=Decimal("-10"),
             currency="USD",
-            transaction_timestamp=datetime.now(tz=timezone.utc),
+            transaction_timestamp=datetime.now(tz=UTC),
             source_system="test",
-            source_extracted_at=datetime.now(tz=timezone.utc),
+            source_extracted_at=datetime.now(tz=UTC),
         )
 
 
@@ -52,8 +52,8 @@ def test_transaction_strips_whitespace():
         status=TransactionStatus.POSTED,
         amount=Decimal("10"),
         currency="USD",
-        transaction_timestamp=datetime.now(tz=timezone.utc),
+        transaction_timestamp=datetime.now(tz=UTC),
         source_system="test",
-        source_extracted_at=datetime.now(tz=timezone.utc),
+        source_extracted_at=datetime.now(tz=UTC),
     )
     assert txn.transaction_id == "TXN"

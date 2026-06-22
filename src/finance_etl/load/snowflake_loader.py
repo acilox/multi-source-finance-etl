@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 import pandas as pd
 
@@ -50,7 +50,7 @@ class SnowflakeLoader:
         self.settings = get_settings()
         self._conn = None
 
-    def __enter__(self) -> "SnowflakeLoader":
+    def __enter__(self) -> SnowflakeLoader:
         self._connect()
         return self
 

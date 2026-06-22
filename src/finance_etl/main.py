@@ -6,10 +6,9 @@ over an already-loaded CSV.
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Optional
 from uuid import uuid4
 
 import pandas as pd
@@ -31,7 +30,6 @@ from finance_etl.transform import (
     CurrencyNormalizer,
     DataQualityScorer,
     FraudScoringEngine,
-    RFMSegmenter,
     SOXValidator,
 )
 from finance_etl.utils.metrics import metrics
@@ -97,14 +95,12 @@ def _load_sample_data() -> tuple[list[Transaction], list[FXRate]]:
             merchant_country=(
                 row.get("merchant_country") if pd.notna(row.get("merchant_country")) else None
             ),
-            description=(
-                row.get("description") if pd.notna(row.get("description")) else None
-            ),
+            description=(row.get("description") if pd.notna(row.get("description")) else None),
             reference_number=(
                 row.get("reference_number") if pd.notna(row.get("reference_number")) else None
             ),
             source_system="sample",
-            source_extracted_at=datetime.now(tz=timezone.utc),
+            source_extracted_at=datetime.now(tz=UTC),
         )
         for _, row in txns_df.iterrows()
     ]
@@ -161,7 +157,7 @@ def _enrich(transactions: list[Transaction], rates: list[FXRate]) -> list[Enrich
                 fx_rate_used=fx_rate,
                 transaction_timestamp=txn.transaction_timestamp,
                 posted_timestamp=txn.posted_timestamp,
-                enriched_at=datetime.now(tz=timezone.utc),
+                enriched_at=datetime.now(tz=UTC),
                 merchant_id=txn.merchant_id,
                 merchant_category=txn.merchant_category,
                 merchant_country=txn.merchant_country,
@@ -192,7 +188,7 @@ def run_stage(stage: str, run_date: date) -> None:
 def run(
     source: str = typer.Option("sample", help="Source to extract from (sample|oracle|api|all)"),
     run_date: str = typer.Option("today", help="Pipeline run date (YYYY-MM-DD or 'today')"),
-    output: Optional[str] = typer.Option(None, help="Optional output CSV path for enriched txns"),
+    output: str | None = typer.Option(None, help="Optional output CSV path for enriched txns"),
 ) -> None:
     """Run the end-to-end pipeline."""
     _bootstrap()

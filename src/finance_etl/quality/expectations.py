@@ -26,18 +26,36 @@ TRANSACTION_EXPECTATIONS = [
     ("expect_column_values_to_not_be_null", {"column": "customer_id"}),
     ("expect_column_values_to_not_be_null", {"column": "amount_base"}),
     ("expect_column_values_to_be_unique", {"column": "transaction_id"}),
-    ("expect_column_values_to_be_between", {
-        "column": "amount_base", "min_value": 0, "max_value": 10_000_000,
-    }),
-    ("expect_column_values_to_be_in_set", {
-        "column": "base_currency", "value_set": ["USD"],
-    }),
-    ("expect_column_values_to_match_regex", {
-        "column": "original_currency", "regex": r"^[A-Z]{3}$",
-    }),
-    ("expect_column_values_to_be_between", {
-        "column": "fraud_risk_score", "min_value": 0.0, "max_value": 1.0,
-    }),
+    (
+        "expect_column_values_to_be_between",
+        {
+            "column": "amount_base",
+            "min_value": 0,
+            "max_value": 10_000_000,
+        },
+    ),
+    (
+        "expect_column_values_to_be_in_set",
+        {
+            "column": "base_currency",
+            "value_set": ["USD"],
+        },
+    ),
+    (
+        "expect_column_values_to_match_regex",
+        {
+            "column": "original_currency",
+            "regex": r"^[A-Z]{3}$",
+        },
+    ),
+    (
+        "expect_column_values_to_be_between",
+        {
+            "column": "fraud_risk_score",
+            "min_value": 0.0,
+            "max_value": 1.0,
+        },
+    ),
 ]
 
 
@@ -50,7 +68,6 @@ def run_transaction_suite(df: pd.DataFrame) -> dict[str, Any]:
         - failed_records: list of indices for records that failed validity checks
     """
     try:
-        import great_expectations as gx  # type: ignore[import-not-found]
         from great_expectations.dataset import PandasDataset  # type: ignore[import-not-found]
     except ImportError:
         logger.warning("ge_not_installed_using_manual_checks")
@@ -68,7 +85,11 @@ def run_transaction_suite(df: pd.DataFrame) -> dict[str, Any]:
             logger.warning("ge_unknown_expectation", expectation=exp_type)
             continue
         result = method(**kwargs)
-        success = bool(result.get("success", False)) if isinstance(result, dict) else getattr(result, "success", False)
+        success = (
+            bool(result.get("success", False))
+            if isinstance(result, dict)
+            else getattr(result, "success", False)
+        )
         if not success:
             overall_success = False
             # Capture row indices where applicable

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Iterable
+from collections.abc import Iterable
 
 from finance_etl.config.logging_config import get_logger
 from finance_etl.config.settings import get_settings
@@ -21,7 +21,7 @@ class RedisLoader:
         self.settings = get_settings()
         self._client = None
 
-    def __enter__(self) -> "RedisLoader":
+    def __enter__(self) -> RedisLoader:
         self._connect()
         return self
 
@@ -52,7 +52,7 @@ class RedisLoader:
             try:
                 self._client.close()
             except Exception:  # noqa: BLE001
-                pass
+                logger.debug("redis_close_failed", exc_info=True)
             self._client = None
 
     def publish_alerts(self, alerts: Iterable[FraudAlert]) -> int:

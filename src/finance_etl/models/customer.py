@@ -4,14 +4,13 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from decimal import Decimal
-from enum import Enum
-from typing import Optional
+from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
-class CustomerSegment(str, Enum):
-    CHAMPION = "CHAMPION"           # high R / high F / high M
+class CustomerSegment(StrEnum):
+    CHAMPION = "CHAMPION"  # high R / high F / high M
     LOYAL = "LOYAL"
     POTENTIAL_LOYALIST = "POTENTIAL_LOYALIST"
     NEW = "NEW"
@@ -31,15 +30,15 @@ class Customer(BaseModel):
     customer_id: str = Field(..., min_length=1, max_length=64)
     first_name: str = Field(..., min_length=1, max_length=128)
     last_name: str = Field(..., min_length=1, max_length=128)
-    email: Optional[EmailStr] = None
-    phone: Optional[str] = Field(None, max_length=32)
-    date_of_birth: Optional[date] = None
+    email: EmailStr | None = None
+    phone: str | None = Field(None, max_length=32)
+    date_of_birth: date | None = None
 
-    address_line1: Optional[str] = Field(None, max_length=256)
-    city: Optional[str] = Field(None, max_length=128)
-    state: Optional[str] = Field(None, max_length=64)
+    address_line1: str | None = Field(None, max_length=256)
+    city: str | None = Field(None, max_length=128)
+    state: str | None = Field(None, max_length=64)
     country: str = Field(..., min_length=2, max_length=2)
-    postal_code: Optional[str] = Field(None, max_length=20)
+    postal_code: str | None = Field(None, max_length=20)
 
     risk_tier: str = Field("STANDARD", max_length=16)  # LOW | STANDARD | HIGH | VIP
     kyc_status: str = Field("VERIFIED", max_length=16)
@@ -49,8 +48,8 @@ class Customer(BaseModel):
     updated_at: datetime
 
     # SCD Type 2 attributes
-    effective_from: Optional[datetime] = None
-    effective_to: Optional[datetime] = None
+    effective_from: datetime | None = None
+    effective_to: datetime | None = None
     is_current: bool = True
 
 

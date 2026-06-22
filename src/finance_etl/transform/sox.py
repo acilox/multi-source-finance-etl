@@ -26,9 +26,7 @@ class SOXValidator:
     Returns (is_compliant, list_of_violation_codes).
     """
 
-    def validate(
-        self, txn: Transaction, amount_base: Decimal
-    ) -> tuple[bool, list[str]]:
+    def validate(self, txn: Transaction, amount_base: Decimal) -> tuple[bool, list[str]]:
         violations: list[str] = []
 
         # CTRL-001: mandatory audit fields
@@ -44,10 +42,7 @@ class SOXValidator:
             violations.append("CTRL-002-POSTED_NO_TIMESTAMP")
 
         # CTRL-003: posted_timestamp must not predate transaction_timestamp
-        if (
-            txn.posted_timestamp is not None
-            and txn.posted_timestamp < txn.transaction_timestamp
-        ):
+        if txn.posted_timestamp is not None and txn.posted_timestamp < txn.transaction_timestamp:
             violations.append("CTRL-003-INVALID_TIMESTAMP_ORDER")
 
         # CTRL-004: declined/reversed must not have positive impact (status-amount integrity)

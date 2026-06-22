@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum
-from typing import Optional
+from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
-class TransactionType(str, Enum):
+class TransactionType(StrEnum):
     DEBIT = "DEBIT"
     CREDIT = "CREDIT"
     TRANSFER = "TRANSFER"
@@ -20,7 +19,7 @@ class TransactionType(str, Enum):
     DEPOSIT = "DEPOSIT"
 
 
-class TransactionStatus(str, Enum):
+class TransactionStatus(StrEnum):
     PENDING = "PENDING"
     POSTED = "POSTED"
     REVERSED = "REVERSED"
@@ -43,19 +42,19 @@ class Transaction(BaseModel):
     currency: str = Field(..., min_length=3, max_length=3)
 
     transaction_timestamp: datetime
-    posted_timestamp: Optional[datetime] = None
+    posted_timestamp: datetime | None = None
 
-    merchant_id: Optional[str] = Field(None, max_length=64)
-    merchant_category: Optional[str] = Field(None, max_length=64)
-    merchant_country: Optional[str] = Field(None, max_length=2)
+    merchant_id: str | None = Field(None, max_length=64)
+    merchant_category: str | None = Field(None, max_length=64)
+    merchant_country: str | None = Field(None, max_length=2)
 
-    description: Optional[str] = Field(None, max_length=512)
-    reference_number: Optional[str] = Field(None, max_length=64)
+    description: str | None = Field(None, max_length=512)
+    reference_number: str | None = Field(None, max_length=64)
 
     # Source system tracking
     source_system: str = Field(..., max_length=32)
     source_extracted_at: datetime
-    raw_payload: Optional[dict] = None
+    raw_payload: dict | None = None
 
     @field_validator("currency")
     @classmethod
@@ -110,17 +109,17 @@ class EnrichedTransaction(BaseModel):
 
     # Timestamps
     transaction_timestamp: datetime
-    posted_timestamp: Optional[datetime] = None
+    posted_timestamp: datetime | None = None
     enriched_at: datetime
 
     # Merchant
-    merchant_id: Optional[str] = None
-    merchant_category: Optional[str] = None
-    merchant_country: Optional[str] = None
+    merchant_id: str | None = None
+    merchant_category: str | None = None
+    merchant_country: str | None = None
 
     # Customer enrichment
-    customer_segment: Optional[str] = None
-    customer_risk_tier: Optional[str] = None
+    customer_segment: str | None = None
+    customer_risk_tier: str | None = None
 
     # Fraud
     fraud_risk_score: float = Field(0.0, ge=0.0, le=1.0)

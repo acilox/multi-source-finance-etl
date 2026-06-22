@@ -10,10 +10,10 @@ Implements a layered rules-based fraud detection system:
 from __future__ import annotations
 
 from collections import defaultdict, deque
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 from decimal import Decimal
 from statistics import mean, pstdev
-from typing import Iterable
 from uuid import uuid4
 
 from finance_etl.config.logging_config import get_logger
@@ -55,7 +55,9 @@ class FraudScoringEngine:
         self._customer_amounts[txn.customer_id].append(amount_base)
         # cap history at 1000 items per customer
         if len(self._customer_amounts[txn.customer_id]) > 1000:
-            self._customer_amounts[txn.customer_id] = self._customer_amounts[txn.customer_id][-1000:]
+            self._customer_amounts[txn.customer_id] = self._customer_amounts[txn.customer_id][
+                -1000:
+            ]
 
         triggered = [r for r in rules if r.triggered]
         final_score = max((r.score for r in rules), default=0.0)
@@ -79,12 +81,12 @@ class FraudScoringEngine:
             triggered=triggered,
             severity="HIGH" if triggered else "LOW",
             score=score,
-            explanation=f"{count_in_window} txns in last hour (threshold {self.velocity_threshold})",
+            explanation=(
+                f"{count_in_window} txns in last hour " f"(threshold {self.velocity_threshold})"
+            ),
         )
 
-    def _rule_high_value(
-        self, txn: Transaction, amount_base: Decimal
-    ) -> FraudRuleResult:
+    def _rule_high_value(self, txn: Transaction, amount_base: Decimal) -> FraudRuleResult:
         triggered = amount_base >= self.high_value_threshold
         # log-scale score
         try:
@@ -114,20 +116,23 @@ class FraudScoringEngine:
 
         cutoff = txn.transaction_timestamp - timedelta(hours=1)
         offending = [
-            t for t in recent
+            t
+            for t in recent
             if t.transaction_timestamp >= cutoff
             and t.merchant_country
             and t.merchant_country != txn.merchant_country
         ]
         triggered = len(offending) > 0
+        prev_country = offending[0].merchant_country if offending else "-"
         return FraudRuleResult(
             rule_name="geo_velocity",
             triggered=triggered,
             severity="CRITICAL" if triggered else "LOW",
             score=1.0 if triggered else 0.0,
             explanation=(
-                f"Cross-country activity in <1h ({offending[0].merchant_country if offending else '-'} -> "
-                f"{txn.merchant_country})" if triggered else "No cross-country movement"
+                f"Cross-country activity in <1h ({prev_country} -> {txn.merchant_country})"
+                if triggered
+                else "No cross-country movement"
             ),
         )
 

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from datetime import datetime
-from typing import Iterator
 
 from sqlalchemy import create_engine, text
 
@@ -47,7 +47,7 @@ class PostgresCustomerExtractor:
         self.settings = get_settings()
         self.engine = None
 
-    def __enter__(self) -> "PostgresCustomerExtractor":
+    def __enter__(self) -> PostgresCustomerExtractor:
         self._connect()
         return self
 
@@ -56,9 +56,7 @@ class PostgresCustomerExtractor:
 
     @retry_with_backoff(max_attempts=3, initial_wait=2.0)
     def _connect(self) -> None:
-        self.engine = create_engine(
-            self.settings.postgres.url, pool_pre_ping=True, pool_size=5
-        )
+        self.engine = create_engine(self.settings.postgres.url, pool_pre_ping=True, pool_size=5)
         logger.info("postgres_engine_created")
 
     def close(self) -> None:

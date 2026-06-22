@@ -27,7 +27,7 @@ class SFTPFileExtractor:
         self._client = None
         self._transport = None
 
-    def __enter__(self) -> "SFTPFileExtractor":
+    def __enter__(self) -> SFTPFileExtractor:
         self._connect()
         return self
 

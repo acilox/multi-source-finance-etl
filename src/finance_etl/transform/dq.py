@@ -9,8 +9,7 @@ Computes per-record DQ scores across 4 dimensions:
 
 from __future__ import annotations
 
-from datetime import datetime
-from decimal import Decimal
+from datetime import UTC, datetime
 
 from finance_etl.config.logging_config import get_logger
 from finance_etl.models import Transaction
@@ -61,10 +60,14 @@ class DataQualityScorer:
             issues.append("DQ-VALIDITY-INVALID_CURRENCY")
             validity -= 0.25
             metrics.dq_failures.labels(check="validity_currency").inc()
-        if txn.transaction_timestamp and txn.transaction_timestamp > datetime.utcnow():
-            issues.append("DQ-VALIDITY-FUTURE_TIMESTAMP")
-            validity -= 0.25
-            metrics.dq_failures.labels(check="validity_timestamp").inc()
+        if txn.transaction_timestamp is not None:
+            ts = txn.transaction_timestamp
+            if ts.tzinfo is None:  # treat naive timestamps as UTC
+                ts = ts.replace(tzinfo=UTC)
+            if ts > datetime.now(UTC):
+                issues.append("DQ-VALIDITY-FUTURE_TIMESTAMP")
+                validity -= 0.25
+                metrics.dq_failures.labels(check="validity_timestamp").inc()
         validity = max(0.0, validity)
 
         # ---- Uniqueness ----
@@ -78,19 +81,11 @@ class DataQualityScorer:
 
         # ---- Consistency ----
         consistency = 1.0
-        if (
-            txn.posted_timestamp is not None
-            and txn.posted_timestamp < txn.transaction_timestamp
-        ):
+        if txn.posted_timestamp is not None and txn.posted_timestamp < txn.transaction_timestamp:
             issues.append("DQ-CONSISTENCY-POSTED_BEFORE_TXN")
             consistency -= 0.5
             metrics.dq_failures.labels(check="consistency_ts_order").inc()
 
         # Composite score (weighted average)
-        score = (
-            0.35 * completeness
-            + 0.30 * validity
-            + 0.20 * uniqueness
-            + 0.15 * consistency
-        )
+        score = 0.35 * completeness + 0.30 * validity + 0.20 * uniqueness + 0.15 * consistency
         return max(0.0, min(1.0, score)), issues
